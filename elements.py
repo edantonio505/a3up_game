@@ -209,7 +209,7 @@ class Level():
 
 
 
-
+    # convert level design to platforms array with [width, height, pos_x_pos_y] values
     def get_level_from_design(self):
         level = []
         platform_height = self.height
