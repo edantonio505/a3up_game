@@ -1,13 +1,13 @@
 import pygame
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 
-
 class Player(pygame.sprite.Sprite):
-    """ This class represents the bar at the bottom that the player
-        controls. """
+    """
+    This class represents the bar at the bottom that the player controls.
+    """
  
     # -- Methods
-    def __init__(self, height = 60, width = 40, color_fill=(255, 0, 0)):
+    def __init__(self, height=40, width=60, color=(255, 0, 0)):
         """ Constructor function """
  
         # Call the parent's constructor
@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.image = pygame.Surface([self.width, self.height])
-        self.image.fill(color_fill)
+        self.image.fill(color)
  
         # Set a referance to the image rect.
         self.rect = self.image.get_rect()
@@ -29,20 +29,7 @@ class Player(pygame.sprite.Sprite):
  
         # List of sprites we can bump against
         self.level = None
-
-        
-
-    def __str__(self):
-        message = "Player: \n"
-        message += "\theight: {}\n".format(self.height)
-        message += "\twidth: {}\n".format(self.width)
-        message += "\tpos x: {}\n".format(self.rect.x)
-        message += "\tpos y: {}\n".format(self.rect.y)
-        return message
-    
-
-
-
+ 
     def update(self):
         """ Move the player. """
         # Gravity
@@ -94,8 +81,8 @@ class Player(pygame.sprite.Sprite):
         """ Called when user hits 'jump' button. """
  
         # move down a bit and see if there is a platform below us.
-        # Move down 2 pixels because it doesn't work well if we only move down
-        # 1 when working with a platform moving down.
+        # Move down 2 pixels because it doesn't work well if we only move down 1
+        # when working with a platform moving down.
         self.rect.y += 2
         platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
         self.rect.y -= 2
@@ -116,6 +103,7 @@ class Player(pygame.sprite.Sprite):
     def stop(self):
         """ Called when the user lets off the keyboard. """
         self.change_x = 0
+ 
 
 
 
@@ -124,50 +112,89 @@ class Player(pygame.sprite.Sprite):
 
 
 
+
+
+
+
+
+
+
+
+ 
 class Platform(pygame.sprite.Sprite):
     """ Platform the user can jump on """
  
     def __init__(self, width, height, color=(0, 255, 0)):
         """ Platform constructor. Assumes constructed with user passing in
-            an array of 5 numbers like what's defined at the top of this
-            code. """
+            an array of 5 numbers like what's defined at the top of this code.
+            """
         super().__init__()
  
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
  
         self.rect = self.image.get_rect()
+ 
+ 
 
 
 
 
-class Level(object):
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Level():
     """ This is a generic super-class used to define a level.
         Create a child class for each level with level-specific
         info. """
-
+ 
     def __init__(self, player):
-        """ Constructor. Pass in a handle to player. Needed for when moving platforms
-            collide with the player. """
+        """ Constructor. Pass in a handle to player. Needed for when moving
+            platforms collide with the player. """
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
         self.player = player
-
-        # Background image
-        self.background = None
-
+ 
+        # How far this world has been scrolled left/right
+        self.world_shift = 0
+ 
     # Update everythign on this level
     def update(self):
         """ Update everything in this level."""
         self.platform_list.update()
         self.enemy_list.update()
-
+ 
     def draw(self, screen, color=(0, 0, 255)):
         """ Draw everything on this level. """
-
+ 
         # Draw the background
         screen.fill(color)
-
+ 
         # Draw all the sprite lists that we have
         self.platform_list.draw(screen)
         self.enemy_list.draw(screen)
+ 
+    def shift_world(self, shift_x):
+        """ When the user moves left/right and we need to scroll
+        everything: """
+ 
+        # Keep track of the shift amount
+        self.world_shift += shift_x
+ 
+        # Go through all the sprite lists and shift
+        for platform in self.platform_list:
+            platform.rect.x += shift_x
+ 
+        for enemy in self.enemy_list:
+            enemy.rect.x += shift_x
+ 
