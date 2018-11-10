@@ -33,18 +33,20 @@ def main():
     player.rect.x = (SCREEN_WIDTH // 2) - (PLAYER_HEIGHT // 2)
     player.rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT
     active_sprite_list.add(player)
- 
-    # Loop until the user clicks the close button.
-    done = False
+    running = True
+
+    # Calculate highest jump
+    highest_jump = 0
  
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
- 
+    
+
     # -------- Main Program Loop -----------
-    while not done:
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = True
+                running = False
  
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -58,35 +60,33 @@ def main():
                 if event.key == pygame.K_LEFT and player.change_x < 0:
                     player.stop()
                 if event.key == pygame.K_RIGHT and player.change_x > 0:
-                    player.stop()
- 
+                    player.stop() 
         # Update the player.
         active_sprite_list.update()
  
         # Update items in the level
         current_level.update()
- 
-        # If the player gets near the right side, shift the world left (-x)
-        if player.rect.right >= 500:
-            diff = player.rect.right - 500
-            player.rect.right = 500
-            current_level.shift_world(-diff)
- 
-        # If the player gets near the left side, shift the world right (+x)
-        if player.rect.left <= 120:
-            diff = 120 - player.rect.left
-            player.rect.left = 120
-            current_level.shift_world(diff)
- 
-        # If the player gets to the end of the level, go to the next level
-        current_position = player.rect.x + current_level.world_shift
-        if current_position < current_level.level_limit:
-            player.rect.x = 120
-            if current_level_no < len(level_list)-1:
-                current_level_no += 1
-                current_level = level_list[current_level_no]
-                player.level = current_level
- 
+        top_diff_threshosld = 200
+
+        # Move screen while jumping
+        if player.rect.top < top_diff_threshosld:
+            diff = player.rect.top + top_diff_threshosld
+            player.rect.top = top_diff_threshosld
+
+            if highest_jump == 0:
+                highest_jump = top_diff_threshosld+10
+            else:
+                highest_jump += 10
+            current_level.shift_world(-10, screen)
+            player.rect.top = top_diff_threshosld
+        
+        if highest_jump >= 450:
+            player.player_over_threshold = True
+
+        if player.rect.top >= (520+PLAYER_HEIGHT) and player.player_over_threshold == True:
+            print("player lost")
+            running = False
+
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
         current_level.draw(screen, color=LEVEL_COLOR)
         active_sprite_list.draw(screen)

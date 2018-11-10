@@ -12,14 +12,22 @@ class Level_01(Level):
         # Call the parent constructor
         Level.__init__(self, player)
  
-        self.level_limit = -1000
+        self.level_limit = -5000
  
         # Array with width, height, x, and y of platform
-        level = [[210, 70, 500, 500],
-                 [210, 70, 800, 400],
-                 [210, 70, 1000, 500],
-                 [210, 70, 1120, 280],
-                 ]
+        level = [
+            [210, 70, 500, 500],
+            [210, 70, 200, 400],
+            [210, 70, 100, 300],
+            [210, 70, 500, 200],
+            [150, 70, 200, 60],
+            [210, 70, 500, -20],
+            [180, 70, 250, -150],
+            [210, 70, 150, -350],
+            [180, 70, 500, -550],
+            [300, 70, 100, -700],
+            [200, 70, 350, -900]
+        ]
  
         # Go through the array above and add platforms
         for platform in level:

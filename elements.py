@@ -29,7 +29,19 @@ class Player(pygame.sprite.Sprite):
  
         # List of sprites we can bump against
         self.level = None
- 
+        self.player_over_threshold = False
+        self.died = False
+
+
+
+    def __str__(self):
+        message = "Player: \n"
+        message += "\theight: {}\n".format(self.height)
+        message += "\twidth: {}\n".format(self.width)
+        message += "\tpos_x: {}\n".format(self.rect.x)
+        message += "\tpos_y: {}\n".format(self.rect.y)
+        return message
+    
     def update(self):
         """ Move the player. """
         # Gravity
@@ -73,10 +85,11 @@ class Player(pygame.sprite.Sprite):
             self.change_y += .35
  
         # See if we are on the ground.
-        if self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = SCREEN_HEIGHT - self.rect.height
- 
+        if self.player_over_threshold == False:
+            if self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
+                self.change_y = 0
+                self.rect.y = SCREEN_HEIGHT - self.rect.height
+
     def jump(self):
         """ Called when user hits 'jump' button. """
  
@@ -129,13 +142,16 @@ class Platform(pygame.sprite.Sprite):
             an array of 5 numbers like what's defined at the top of this code.
             """
         super().__init__()
- 
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
- 
         self.rect = self.image.get_rect()
- 
- 
+    
+    def __str__(self):
+        message = "Platform:\n"
+        message += "\tpos_x: {}\n".format(self.rect.x)
+        message += "\tpos_y: {}\n".format(self.rect.y)
+
+
 
 
 
@@ -164,10 +180,18 @@ class Level():
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
         self.player = player
- 
+        
+
         # How far this world has been scrolled left/right
         self.world_shift = 0
- 
+    
+    def __str__(self):
+        message = "Level: \n"
+        message += "\tplatform_list: {}".format(self.platform_list)
+        message += "\twold_shift: {}".format(self.world_shift)
+        message += "\tplayer_over_threshold: {}".format(self.player_over_threshold)
+        return message
+
     # Update everythign on this level
     def update(self):
         """ Update everything in this level."""
@@ -184,17 +208,20 @@ class Level():
         self.platform_list.draw(screen)
         self.enemy_list.draw(screen)
  
-    def shift_world(self, shift_x):
+    def shift_world(self, shift_y, screen):
         """ When the user moves left/right and we need to scroll
         everything: """
- 
+
         # Keep track of the shift amount
-        self.world_shift += shift_x
+        self.world_shift += shift_y
  
         # Go through all the sprite lists and shift
         for platform in self.platform_list:
-            platform.rect.x += shift_x
- 
+            platform.rect.y -= shift_y
+
+            if platform.rect.y >= screen.get_rect().height:
+                self.platform_list.remove(platform)
+
         for enemy in self.enemy_list:
-            enemy.rect.x += shift_x
+            enemy.rect.y -= shift_y
  
