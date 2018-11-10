@@ -1,6 +1,7 @@
 import pygame
 from settings import *
 from levels import *
+from level_designs import *
 from elements import Player
 
 
@@ -20,8 +21,8 @@ def main():
  
     # Create all the levels
     level_list = []
-    level_list.append(Level_01(player))
-    level_list.append(Level_02(player))
+    level_list.append(Level_01(player, height=PLATFORM_HEIGHT, screen=screen, level_design=level1))
+    level_list.append(Level_02(player, height=PLATFORM_HEIGHT, screen=screen, level_design=level2))
  
     # Set the current level
     current_level_no = 0

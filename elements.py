@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
     # -- Methods
     def __init__(self, height=40, width=60, color=(255, 0, 0)):
         """ Constructor function """
- 
+
         # Call the parent's constructor
         super().__init__()
  
@@ -19,14 +19,15 @@ class Player(pygame.sprite.Sprite):
         self.height = height
         self.image = pygame.Surface([self.width, self.height])
         self.image.fill(color)
- 
+
         # Set a referance to the image rect.
         self.rect = self.image.get_rect()
  
         # Set speed vector of player
         self.change_x = 0
         self.change_y = 0
- 
+
+            
         # List of sprites we can bump against
         self.level = None
         self.player_over_threshold = False
@@ -174,23 +175,76 @@ class Level():
         Create a child class for each level with level-specific
         info. """
  
-    def __init__(self, player):
+    def __init__(self, player, height=70, screen = None, level_design = None):
         """ Constructor. Pass in a handle to player. Needed for when moving
             platforms collide with the player. """
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
         self.player = player
+        self.height = height
         
+        if not screen:
+            print("Screen needed in level")
+            quit()
+
+        if not level_design:
+            print("level design needed")
+            quit()
+
+        self.level_design = level_design
+        self.screen_height = screen.get_rect().height
+        self.screen_width = screen.get_rect().width
 
         # How far this world has been scrolled left/right
         self.world_shift = 0
     
+
     def __str__(self):
         message = "Level: \n"
-        message += "\tplatform_list: {}".format(self.platform_list)
-        message += "\twold_shift: {}".format(self.world_shift)
-        message += "\tplayer_over_threshold: {}".format(self.player_over_threshold)
+        message += "\tplatform_list: {}\n".format(self.platform_list)
+        message += "\twold_shift: {}\n".format(self.world_shift)
+        message += "\tplayer_over_threshold: {}\n".format(self.player_over_threshold)
+        message += "\tlevel_design: {}\n".format(self.level_design)
         return message
+
+
+
+
+    def get_level_from_design(self):
+        level = []
+        platform_height = self.height
+        level_design = self.level_design.split("\n")
+        pos_y = 520
+        
+        for platform in reversed(level_design[1:-2]):
+            new_platform = None
+            platform = platform[1:-1]
+            if "#" in platform:
+                new_platform = []
+                platform_width = 0
+                pos_x = 0     
+                block_width = (self.screen_width //  len(platform))
+                first_block = 0
+
+                for i in range(len(platform)):
+                    if first_block == 0 and platform[i] == " ":
+                        pos_x += block_width
+
+                    if platform[i] == "#":
+                        if first_block == 0:
+                            first_block = i
+                        platform_width += block_width
+                
+                new_platform = [platform_width, platform_height, pos_x, pos_y]
+                pos_y -= platform_height
+            else:
+               pos_y -= platform_height
+
+            if new_platform:
+                level.append(new_platform)
+        return level
+
+
 
     # Update everythign on this level
     def update(self):
