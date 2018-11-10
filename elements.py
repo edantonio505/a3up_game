@@ -1,6 +1,5 @@
 import pygame
-from settings import BLACK, WHITE, GREEN, RED, BLUE, SCREEN_HEIGHT
-
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 class Player(pygame.sprite.Sprite):
@@ -8,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         controls. """
  
     # -- Methods
-    def __init__(self, height = 60, width = 40):
+    def __init__(self, height = 60, width = 40, color_fill=(255, 0, 0)):
         """ Constructor function """
  
         # Call the parent's constructor
@@ -19,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.image = pygame.Surface([self.width, self.height])
-        self.image.fill(RED)
+        self.image.fill(color_fill)
  
         # Set a referance to the image rect.
         self.rect = self.image.get_rect()
@@ -128,14 +127,14 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     """ Platform the user can jump on """
  
-    def __init__(self, width, height):
+    def __init__(self, width, height, color=(0, 255, 0)):
         """ Platform constructor. Assumes constructed with user passing in
             an array of 5 numbers like what's defined at the top of this
             code. """
         super().__init__()
  
         self.image = pygame.Surface([width, height])
-        self.image.fill(GREEN)
+        self.image.fill(color)
  
         self.rect = self.image.get_rect()
 
@@ -163,11 +162,11 @@ class Level(object):
         self.platform_list.update()
         self.enemy_list.update()
 
-    def draw(self, screen):
+    def draw(self, screen, color=(0, 0, 255)):
         """ Draw everything on this level. """
 
         # Draw the background
-        screen.fill(BLUE)
+        screen.fill(color)
 
         # Draw all the sprite lists that we have
         self.platform_list.draw(screen)

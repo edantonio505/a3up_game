@@ -55,7 +55,7 @@ def main():
     player.level = current_level
  
     player.rect.x = (SCREEN_WIDTH // 2) - (PLAYER_WIDTH // 2) 
-    player.rect.y = SCREEN_HEIGHT - player.rect.height
+    player.rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT
     active_sprite_list.add(player)
  
     # Loop until the user clicks the close button.
@@ -108,7 +108,7 @@ def main():
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
  
         # Limit to 60 frames per second
-        clock.tick(60)
+        clock.tick(FPS)
  
         # Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
