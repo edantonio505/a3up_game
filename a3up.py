@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+
 # Global constants
 
 
@@ -17,9 +18,9 @@ class Player(pygame.sprite.Sprite):
  
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk.
-        width = width
-        height = height
-        self.image = pygame.Surface([width, height])
+        self.width = width
+        self.height = height
+        self.image = pygame.Surface([self.width, self.height])
         self.image.fill(RED)
  
         # Set a referance to the image rect.
@@ -38,6 +39,8 @@ class Player(pygame.sprite.Sprite):
         message = "Player: \n"
         message += "\theight: {}\n".format(self.height)
         message += "\twidth: {}\n".format(self.width)
+        message += "\tpos x: {}\n".format(self.rect.x)
+        message += "\tpos y: {}\n".format(self.rect.y)
         return message
     
 
@@ -235,7 +238,7 @@ def main():
                     player.go_left()
                 if event.key == pygame.K_RIGHT:
                     player.go_right()
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_SPACE:
                     player.jump()
  
             if event.type == pygame.KEYUP:
@@ -243,7 +246,10 @@ def main():
                     player.stop()
                 if event.key == pygame.K_RIGHT and player.change_x > 0:
                     player.stop()
- 
+        
+        print(player)
+        
+        
         # Update the player.
         active_sprite_list.update()
  
