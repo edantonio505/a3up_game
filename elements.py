@@ -209,6 +209,64 @@ class Level():
 
 
 
+    def get_width_posx_multiple_platform(self, platform, block_width):
+        first_block = 0
+        posx_array = []
+        width_array = []
+        posx = 0    
+        for i in range(len(platform)):
+            platform_width = 0
+            try:
+                if platform[i] == " " and platform[i+1] == "#":
+                    posx = (i+1)*block_width
+                    posx_array.append(posx)
+            except:
+                pass
+
+        count = 0
+        for i in range(len(platform)):
+            if platform[i] == "#":
+                count += block_width
+            elif platform[i] == " ":
+                if count > 0:
+                    width_array.append(count)
+                count = 0
+        return zip(width_array, posx_array)
+
+
+
+
+
+
+    def get_platform_list(self, platform, platform_width,  platform_height,  pos_x, pos_y, block_width, number_of_platforms):
+        first_block = 0
+        posx_width = None
+        if number_of_platforms > 1:
+            platforms = []
+            posx_width = self.get_width_posx_multiple_platform(platform, block_width)
+            for width, posx in posx_width:
+                platforms.append([width, platform_height,  posx, pos_y])
+            return platforms
+
+
+    
+        for i in range(len(platform)):
+            if first_block == 0 and platform[i] == " ":
+                pos_x += block_width
+
+            if platform[i] == "#":
+                if first_block == 0:
+                    first_block = i
+                platform_width += block_width
+        
+        return [platform_width, platform_height, pos_x, pos_y]
+
+
+
+
+
+
+
     # convert level design to platforms array with [width, height, pos_x_pos_y] values
     def get_level_from_design(self):
         level = []
@@ -219,29 +277,25 @@ class Level():
         for platform in reversed(level_design[1:-2]):
             new_platform = None
             platform = platform[1:-1]
+            number_of_platforms = len(platform.split())
+            
             if "#" in platform:
                 new_platform = []
                 platform_width = 0
                 pos_x = 0     
                 block_width = (self.screen_width //  len(platform))
-                first_block = 0
-
-                for i in range(len(platform)):
-                    if first_block == 0 and platform[i] == " ":
-                        pos_x += block_width
-
-                    if platform[i] == "#":
-                        if first_block == 0:
-                            first_block = i
-                        platform_width += block_width
-                
-                new_platform = [platform_width, platform_height, pos_x, pos_y]
+                new_platform = self.get_platform_list(platform, platform_width,  platform_height,  pos_x, pos_y, block_width, number_of_platforms)
                 pos_y -= platform_height
             else:
                pos_y -= platform_height
 
+
             if new_platform:
-                level.append(new_platform)
+                if number_of_platforms > 1:
+                    for platform in new_platform:
+                        level.append(platform)
+                else:
+                    level.append(new_platform)
         return level
 
 
