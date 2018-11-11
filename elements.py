@@ -222,7 +222,6 @@ class Level():
                     posx_array.append(posx)
             except:
                 pass
-
         count = 0
         for i in range(len(platform)):
             if platform[i] == "#":
@@ -247,18 +246,13 @@ class Level():
             for width, posx in posx_width:
                 platforms.append([width, platform_height,  posx, pos_y])
             return platforms
-
-
-    
         for i in range(len(platform)):
             if first_block == 0 and platform[i] == " ":
                 pos_x += block_width
-
             if platform[i] == "#":
                 if first_block == 0:
                     first_block = i
                 platform_width += block_width
-        
         return [platform_width, platform_height, pos_x, pos_y]
 
 
