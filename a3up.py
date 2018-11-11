@@ -75,16 +75,17 @@ def main():
             player.rect.top = top_diff_threshosld
 
             if highest_jump == 0:
-                highest_jump = top_diff_threshosld+10
+                highest_jump = top_diff_threshosld+HIGHEST_JUMP_RATE
             else:
-                highest_jump += 10
-            current_level.shift_world(-10, screen)
+                highest_jump += HIGHEST_JUMP_RATE
+            current_level.shift_world(-1*(HIGHEST_JUMP_RATE), screen)
             player.rect.top = top_diff_threshosld
         
-        if highest_jump >= 300:
+        if highest_jump >= HIGHEST_JUMP_THRESHOLD:
             player.player_over_threshold = True
 
-        if player.rect.top >= (520+PLAYER_HEIGHT) and player.player_over_threshold == True:
+
+        if player.rect.top >= (screen.get_rect().height) and player.player_over_threshold == True:
             print("player lost")
             running = False
 

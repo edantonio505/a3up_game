@@ -1,5 +1,5 @@
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK, PLAYER_HEIGHT
 
 
 class Player(pygame.sprite.Sprite):
@@ -339,15 +339,11 @@ class Level():
 
 
     # convert level design to platforms array with [width, height, pos_x_pos_y] values
-    def get_level_from_design(self, using_sprite=False, sprite_right=None, sprite_left=None, sprite_center=None):
+    def get_level_from_design(self, using_sprite=False, sprite_right=None, sprite_left=None, sprite_center=None, pos_y = (SCREEN_HEIGHT-PLAYER_HEIGHT)):
         level = []
         platform_height = self.height
-        level_design = self.level_design.split("\n")
-        pos_y = 520
-        
+        level_design = self.level_design.split("\n")        
         sprite_level = []
-
-
 
         for platform in reversed(level_design[1:-2]):
             new_platform = None

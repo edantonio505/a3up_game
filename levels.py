@@ -1,5 +1,5 @@
 from elements import Platform, Level
-from settings import PLAYER_COLOR, PLATFORM_COLOR, LEVEL_COLOR
+from settings import PLAYER_COLOR, PLATFORM_COLOR, LEVEL_COLOR, PLAYER_HEIGHT
  
 
 
@@ -31,13 +31,13 @@ class Level_01(Level):
  
     def __init__(self, player, height = 70, screen=None, level_design=None):
         """ Create level 1. """
-        
+
         # Call the parent constructor
         Level.__init__(self, player, height=height, screen=screen, level_design=level_design)
         self.level_limit = -1000    
-        
+
         # add 2 extra platforms
-        level = self.get_level_from_design(using_sprite=True, sprite_left = GRASS_LEFT, sprite_right=GRASS_RIGHT, sprite_center=GRASS_MIDDLE)
+        level = self.get_level_from_design(using_sprite=True, sprite_left = GRASS_LEFT, sprite_right=GRASS_RIGHT, sprite_center=GRASS_MIDDLE, pos_y=screen.get_rect().height - PLAYER_HEIGHT)
 
         for platform in level:
             block = Platform(width= platform[0], height = platform[1], sprite_sheet_data=platform[4], using_sprite=True)
