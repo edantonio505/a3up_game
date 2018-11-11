@@ -1,6 +1,7 @@
 import pygame
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK
 
+
 class Player(pygame.sprite.Sprite):
     """
     This class represents the bar at the bottom that the player controls.
@@ -199,20 +200,35 @@ class Player(pygame.sprite.Sprite):
 class Platform(pygame.sprite.Sprite):
     """ Platform the user can jump on """
  
-    def __init__(self, width, height, color=(0, 255, 0)):
+    def __init__(self, width=None, height=None, color=(0, 255, 0), sprite_sheet_data=None, using_sprite=False):
         """ Platform constructor. Assumes constructed with user passing in
             an array of 5 numbers like what's defined at the top of this code.
             """
         super().__init__()
-        self.image = pygame.Surface([width, height])
-        self.image.fill(color)
+        
+        self.using_sprite = using_sprite
+
+        if sprite_sheet_data:   
+            sprite_sheet = SpriteSheet("images/tiles_spritesheet.png")
+            self.image = sprite_sheet.get_image(sprite_sheet_data[0],
+                                            sprite_sheet_data[1],
+                                            sprite_sheet_data[2],
+                                            sprite_sheet_data[3])
+            self.image = pygame.transform.scale(self.image, (width, height))
+            
+        else:
+            self.image = pygame.Surface([width, height])
+            self.image.fill(color)
+
+
+
         self.rect = self.image.get_rect()
     
     def __str__(self):
         message = "Platform:\n"
         message += "\tpos_x: {}\n".format(self.rect.x)
         message += "\tpos_y: {}\n".format(self.rect.y)
-
+        return message
 
 
 
@@ -243,7 +259,7 @@ class Level():
         self.enemy_list = pygame.sprite.Group()
         self.player = player
         self.height = height
-        
+
         if not screen:
             print("Screen needed in level")
             quit()
@@ -323,17 +339,22 @@ class Level():
 
 
     # convert level design to platforms array with [width, height, pos_x_pos_y] values
-    def get_level_from_design(self):
+    def get_level_from_design(self, using_sprite=False, sprite_right=None, sprite_left=None, sprite_center=None):
         level = []
         platform_height = self.height
         level_design = self.level_design.split("\n")
         pos_y = 520
         
+        sprite_level = []
+
+
+
         for platform in reversed(level_design[1:-2]):
             new_platform = None
             platform = platform[1:-1]
             number_of_platforms = len(platform.split())
-            
+            block_width = 0
+
             if "#" in platform:
                 new_platform = []
                 platform_width = 0
@@ -344,6 +365,7 @@ class Level():
             else:
                pos_y -= platform_height
 
+            
 
             if new_platform:
                 if number_of_platforms > 1:
@@ -351,6 +373,33 @@ class Level():
                         level.append(platform)
                 else:
                     level.append(new_platform)
+            
+
+
+            if using_sprite and block_width > 0:
+                
+                for platform_level in level:
+                    # append first end 
+                    # width = 0, height = 1, pos_x = 2, pos_y = 3
+
+                    if platform_level[0] > block_width:
+                        left_end = [block_width, platform_level[1], platform_level[2], platform_level[3], sprite_left]
+                        center = [platform_level[0] - (block_width*2), platform_level[1], platform_level[2]+block_width, platform_level[3], sprite_center]
+                        right_end = [block_width , platform_level[1], (platform_level[0])+(platform_level[2]) - block_width, platform_level[3], sprite_right]
+                        
+
+                        sprite_level.append(left_end)
+                        sprite_level.append(center)
+                        sprite_level.append(right_end)
+                    else:
+                        center = platform_level
+                        center.append(sprite_center)
+                        sprite_level.append(center)
+                    # width, height, pos_x, pos_y
+                    # append last end
+        
+        if using_sprite == True:
+            return sprite_level
         return level
 
 
@@ -379,11 +428,13 @@ class Level():
         self.world_shift += shift_y
  
         # Go through all the sprite lists and shift
+
         for platform in self.platform_list:
             platform.rect.y -= shift_y
 
             if platform.rect.y >= screen.get_rect().height:
                 self.platform_list.remove(platform)
+                
 
         for enemy in self.enemy_list:
             enemy.rect.y -= shift_y
