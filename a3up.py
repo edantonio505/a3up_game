@@ -92,10 +92,16 @@ def main():
             print("player lost")
             running = False
 
-        
-
         current_position_y = player.rect.y + current_level.world_shift
         current_position_x = player.rect.x
+
+        if player.rect.x > SCREEN_WIDTH:
+            player.rect.x = 0
+
+
+        elif player.rect.x < -(player.rect.width):
+            player.rect.x = SCREEN_WIDTH
+
 
 
         if current_level.level_limit_x != None and current_level.level_limit_y != None:
