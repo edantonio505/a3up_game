@@ -14,7 +14,7 @@ def main():
     size = [SCREEN_WIDTH, SCREEN_HEIGHT]
     screen = pygame.display.set_mode(size)
  
-    pygame.display.set_caption("Side-scrolling Platformer")
+    pygame.display.set_caption(WINDOW_TITLE)
  
     # Create the player
     player = Player(PLAYER_HEIGHT, PLAYER_WIDTH, color=PLAYER_COLOR)
