@@ -4,7 +4,10 @@
 
 level1 = ""
 level1 += "####################\n"
-level1 += "#        @         #\n"
+level1 += "#                  #\n"
+level1 += "#  @               #\n"
+level1 += "######             #\n"
+level1 += "#                  #\n"
 level1 += "#       ###        #\n"
 level1 += "#                  #\n"
 level1 += "#####              #\n"

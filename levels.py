@@ -68,7 +68,7 @@ class Level_02(Level):
         level = self.get_level_from_design(using_sprite=True, sprite_left = STONE_PLATFORM_LEFT, sprite_right=STONE_PLATFORM_RIGHT, sprite_center=STONE_PLATFORM_MIDDLE, pos_y=screen.get_rect().height - PLAYER_HEIGHT)
         door = Door(70, 70, self.level_limit_x, self.level_limit_y, DOOR)
         self.background_sprites.add(door)
-        door2 = Door(70, 70, (screen.get_rect().width // 2)-100, screen.get_rect().height - PLAYER_HEIGHT, DOOR)
+        door2 = Door(70, 70, (screen.get_rect().width // 2)-50, screen.get_rect().height - PLAYER_HEIGHT, DOOR)
         self.background_sprites.add(door2)
 
         # Go through the array above and add platforms
