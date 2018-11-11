@@ -81,7 +81,7 @@ def main():
             current_level.shift_world(-10, screen)
             player.rect.top = top_diff_threshosld
         
-        if highest_jump >= 450:
+        if highest_jump >= 300:
             player.player_over_threshold = True
 
         if player.rect.top >= (520+PLAYER_HEIGHT) and player.player_over_threshold == True:

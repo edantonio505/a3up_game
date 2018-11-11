@@ -1,5 +1,5 @@
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK
 
 class Player(pygame.sprite.Sprite):
     """
@@ -17,9 +17,61 @@ class Player(pygame.sprite.Sprite):
         # This could also be an image loaded from the disk.
         self.width = width
         self.height = height
-        self.image = pygame.Surface([self.width, self.height])
-        self.image.fill(color)
 
+        self.walking_frames_l = []
+        self.walking_frames_r = []
+
+
+        # self.image = pygame.Surface([self.width, self.height])
+        # self.image.fill(color)
+        self.direction = "R"
+
+
+        sprite_sheet = SpriteSheet("images/p1_walk.png")
+
+
+        image = sprite_sheet.get_image(0, 0, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(66, 0, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(132, 0, 67, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(0, 93, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(66, 93, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(132, 93, 72, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(0, 186, 70, 90)
+        self.walking_frames_r.append(image)
+ 
+        # Load all the right facing images, then flip them
+        # to face left.
+        image = sprite_sheet.get_image(0, 0, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(66, 0, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(132, 0, 67, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(0, 93, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(66, 93, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(132, 93, 72, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(0, 186, 70, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+
+
+
+        self.image = self.walking_frames_r[0]
         # Set a referance to the image rect.
         self.rect = self.image.get_rect()
  
@@ -50,7 +102,16 @@ class Player(pygame.sprite.Sprite):
  
         # Move left/right
         self.rect.x += self.change_x
- 
+
+        pos = self.rect.x + self.level.world_shift
+        if self.direction == "R":
+            frame = (pos // 30) % len(self.walking_frames_r)
+            self.image = self.walking_frames_r[frame]
+        else:
+            frame = (pos // 30) % len(self.walking_frames_l)
+            self.image = self.walking_frames_l[frame]
+
+        
         # See if we hit anything
         block_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
         for block in block_hit_list:
@@ -109,11 +170,11 @@ class Player(pygame.sprite.Sprite):
     def go_left(self):
         """ Called when the user hits the left arrow. """
         self.change_x = -6
- 
+        self.direction = "L"
     def go_right(self):
         """ Called when the user hits the right arrow. """
         self.change_x = 6
- 
+        self.direction = "R"
     def stop(self):
         """ Called when the user lets off the keyboard. """
         self.change_x = 0
@@ -326,4 +387,44 @@ class Level():
 
         for enemy in self.enemy_list:
             enemy.rect.y -= shift_y
+    
+
+
+
+
+
+
+
+
+
+
+
+class SpriteSheet(object):
+    """ Class used to grab images out of a sprite sheet. """
+ 
+    def __init__(self, file_name):
+        """ Constructor. Pass in the file name of the sprite sheet. """
+ 
+        # Load the sprite sheet.
+        self.sprite_sheet = pygame.image.load(file_name).convert()
+ 
+ 
+    def get_image(self, x, y, width, height):
+        """ Grab a single image out of a larger spritesheet
+            Pass in the x, y location of the sprite
+            and the width and height of the sprite. """
+ 
+        # Create a new blank image
+        image = pygame.Surface([width, height]).convert()
+ 
+        # Copy the sprite from the large sheet onto the smaller image
+        image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
+ 
+        # Assuming black works as the transparent color
+        image.set_colorkey(BLACK)
+ 
+        # Return the image
+        return image
+
+
  
