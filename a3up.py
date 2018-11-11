@@ -30,8 +30,11 @@ def main():
  
     active_sprite_list = pygame.sprite.Group()
     player.level = current_level
- 
-    player.rect.x = (SCREEN_WIDTH // 2) - (PLAYER_HEIGHT // 2)
+    
+
+    x_center = (SCREEN_WIDTH // 2) - (PLAYER_HEIGHT // 2)
+
+    player.rect.x = x_center
     player.rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT
     active_sprite_list.add(player)
     running = True
@@ -89,6 +92,25 @@ def main():
             print("player lost")
             running = False
 
+        
+
+        current_position_y = player.rect.y + current_level.world_shift
+        current_position_x = player.rect.x
+
+
+        if current_level.level_limit_x != None and current_level.level_limit_y != None:
+            if current_position_x in range(current_level.level_limit_x, current_level.level_limit_x+PLAYER_WIDTH) \
+            and current_position_y in range(current_level.level_limit_y - player.rect.height, current_level.level_limit_y):
+            
+                player.rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT
+                player.rect.x = x_center
+                player.player_over_threshold = False
+                highest_jump = 0
+                if current_level_no < len(level_list)-1:
+                    current_level_no += 1
+                    current_level = level_list[current_level_no]
+                    player.level = current_level
+                    
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
         current_level.draw(screen, color=LEVEL_COLOR)
         active_sprite_list.draw(screen)
