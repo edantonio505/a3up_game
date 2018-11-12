@@ -5,47 +5,19 @@ from level_designs import *
 from elements import Player
 
 
- 
-def main():
-    """ Main Program """
-    pygame.init()
- 
-    # Set the height and width of the screen
-    size = [SCREEN_WIDTH, SCREEN_HEIGHT]
-    screen = pygame.display.set_mode(size)
- 
-    pygame.display.set_caption(WINDOW_TITLE)
- 
-    # Create the player
-    player = Player(PLAYER_HEIGHT, PLAYER_WIDTH, color=PLAYER_COLOR)
- 
-    # Create all the levels
-    level_list = []
-    level_list.append(Level_01(player, height=PLATFORM_HEIGHT, screen=screen, level_design=level1))
-    level_list.append(Level_02(player, height=PLATFORM_HEIGHT, screen=screen, level_design=level2))
- 
-    # Set the current level
-    current_level_no = 0
-    current_level = level_list[current_level_no]
- 
-    active_sprite_list = pygame.sprite.Group()
-    player.level = current_level
-    
 
-    x_center = (SCREEN_WIDTH // 2) - (PLAYER_HEIGHT // 2)
-
-    player.rect.x = x_center
-    player.rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT
-    active_sprite_list.add(player)
+def game_loop(
+    active_sprite_list,
+    x_center,
+    level_list,
+    current_level_no,
+    current_level,
+    player,
+    highest_jump,
+    screen,
+    clock
+):
     running = True
-
-    # Calculate highest jump
-    highest_jump = 0
- 
-    # Used to manage how fast the screen updates
-    clock = pygame.time.Clock()
-    
-
     # -------- Main Program Loop -----------
     while running:
         for event in pygame.event.get():
@@ -92,18 +64,22 @@ def main():
             print("player lost")
             running = False
 
+
+
+        # Get Player position 
         current_position_y = player.rect.y + current_level.world_shift
         current_position_x = player.rect.x
 
+
+        # If the player is on one end send the player to the other end
         if player.rect.x > SCREEN_WIDTH:
             player.rect.x = 0
-
 
         elif player.rect.x < -(player.rect.width):
             player.rect.x = SCREEN_WIDTH
 
 
-
+        # Check if the the player is on a level gateway
         if current_level.level_limit_x != None and current_level.level_limit_y != None:
             if current_position_x in range(current_level.level_limit_x, current_level.level_limit_x+PLAYER_WIDTH) \
             and current_position_y in range(current_level.level_limit_y - player.rect.height, current_level.level_limit_y):
@@ -117,6 +93,7 @@ def main():
                     current_level = level_list[current_level_no]
                     player.level = current_level
                     
+
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
         current_level.draw(screen, color=LEVEL_COLOR)
         active_sprite_list.draw(screen)
@@ -132,6 +109,72 @@ def main():
     # Be IDLE friendly. If you forget this line, the program will 'hang'
     # on exit.
     pygame.quit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+def main():
+    """ Main Program """
+    pygame.init()
+ 
+    # Set the height and width of the screen
+    size = [SCREEN_WIDTH, SCREEN_HEIGHT]
+    screen = pygame.display.set_mode(size)
+    
+    # Window Title
+    pygame.display.set_caption(WINDOW_TITLE)
+ 
+    # Create the player
+    player = Player(PLAYER_HEIGHT, PLAYER_WIDTH, color=PLAYER_COLOR)
+ 
+    # Create all the levels
+    level_list = []
+    level_list.append(Level_01(player, height=PLATFORM_HEIGHT, screen=screen, level_design=level1))
+    level_list.append(Level_02(player, height=PLATFORM_HEIGHT, screen=screen, level_design=level2))
+ 
+    # Set the current level
+    current_level_no = 0
+    current_level = level_list[current_level_no]
+    active_sprite_list = pygame.sprite.Group()
+    player.level = current_level
+    x_center = (SCREEN_WIDTH // 2) - (PLAYER_HEIGHT // 2)
+    player.rect.x = x_center
+    player.rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT
+    active_sprite_list.add(player)
+
+    # Calculate highest jump
+    highest_jump = 0
+ 
+    # Used to manage how fast the screen updates
+    clock = pygame.time.Clock()
+
+    # Game loop
+    game_loop(
+        active_sprite_list,
+        x_center,
+        level_list,
+        current_level_no,
+        current_level,
+        player,
+        highest_jump,
+        screen,
+        clock
+    )
  
 
 
