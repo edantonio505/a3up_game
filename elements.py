@@ -183,14 +183,19 @@ class Player(pygame.sprite.Sprite):
 
 
 
+class Door(pygame.sprite.Sprite):
+    def __init__(self, width, height, pos_x, pos_y, sprite_sheet_data=None):
+        super().__init__()
 
-
-
-
-
-
-
-
+        sprite_sheet = SpriteSheet("images/tiles_spritesheet.png")
+        self.image = sprite_sheet.get_image(sprite_sheet_data[0],
+                                            sprite_sheet_data[1],
+                                            sprite_sheet_data[2],
+                                            sprite_sheet_data[3])
+        # self.image = pygame.transform.scale(self.image, (width, height))
+        self.rect = self.image.get_rect()
+        self.rect.x = pos_x
+        self.rect.y = pos_y
 
 
 
@@ -257,8 +262,11 @@ class Level():
             platforms collide with the player. """
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
+        self.background_sprites = pygame.sprite.Group()
         self.player = player
         self.height = height
+        self.level_limit_x = None
+        self.level_limit_y = None
 
         if not screen:
             print("Screen needed in level")
@@ -326,6 +334,12 @@ class Level():
         for i in range(len(platform)):
             if first_block == 0 and platform[i] == " ":
                 pos_x += block_width
+
+            if platform[i] == "@":
+                if first_block == 0:
+                    first_block = i
+                platform_width += block_width
+
             if platform[i] == "#":
                 if first_block == 0:
                     first_block = i
@@ -351,6 +365,8 @@ class Level():
             number_of_platforms = len(platform.split())
             block_width = 0
 
+
+
             if "#" in platform:
                 new_platform = []
                 platform_width = 0
@@ -358,10 +374,19 @@ class Level():
                 block_width = (self.screen_width //  len(platform))
                 new_platform = self.get_platform_list(platform, platform_width,  platform_height,  pos_x, pos_y, block_width, number_of_platforms)
                 pos_y -= platform_height
+            elif "@" in platform:
+                new_platform = []
+                platform_width = 0
+                pos_x = 0
+                block_width = (self.screen_width //  len(platform))
+
+                new_platform = self.get_platform_list(platform, platform_width,  platform_height,  pos_x, pos_y, block_width, number_of_platforms)
+                self.level_limit_y = new_platform[3]
+                self.level_limit_x = new_platform[2]
+                new_platform = None
+
             else:
                pos_y -= platform_height
-
-            
 
             if new_platform:
                 if number_of_platforms > 1:
@@ -403,16 +428,16 @@ class Level():
     # Update everythign on this level
     def update(self):
         """ Update everything in this level."""
+        self.background_sprites.update()
         self.platform_list.update()
         self.enemy_list.update()
  
     def draw(self, screen, color=(0, 0, 255)):
         """ Draw everything on this level. """
- 
         # Draw the background
         screen.fill(color)
- 
         # Draw all the sprite lists that we have
+        self.background_sprites.draw(screen)
         self.platform_list.draw(screen)
         self.enemy_list.draw(screen)
  
@@ -436,6 +461,9 @@ class Level():
             enemy.rect.y -= shift_y
     
 
+
+        for sprite in self.background_sprites:
+            sprite.rect.y -= shift_y
 
 
 
