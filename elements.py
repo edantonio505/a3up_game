@@ -496,6 +496,9 @@ class Level():
 
         for platform in self.platform_list:
             platform.rect.y -= shift_y
+            
+            if platform.rect.y >= screen.get_rect().height:
+                self.platform_list.remove(platform)
 
         for enemy in self.enemy_list:
             enemy.rect.y -= shift_y
