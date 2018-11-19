@@ -2,7 +2,7 @@ import pygame
 from settings import *
 from levels import *
 from level_designs import *
-from elements import Player
+from player import Player
 
 
 

@@ -1,8 +1,7 @@
-from elements import Platform, Level, Door
 import pygame
 from settings import PLAYER_COLOR, PLATFORM_COLOR, LEVEL_COLOR, PLAYER_HEIGHT
- 
-
+from level import Level
+from elements import Platform,  Door
 
 
 
