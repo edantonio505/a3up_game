@@ -421,15 +421,15 @@ class Level():
         for platform_level in level:
             if platform_level[0] > block_width:
                 current_block_pos = 0
-                # Create a new blank image
+                # Create a new blank platform
                 image = pygame.Surface([platform_level[0], platform_level[1]]).convert()
                 image.set_colorkey(BLACK)
 
-                # blit left side onto new image
+                # blit left side onto new platform
                 image.blit(self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_left), (current_block_pos, 0))
                 current_block_pos += block_width
 
-                # create center image here
+                # blit sprite onto center for platform
                 number_of_blocks_center = (platform_level[0] - (block_width*2)) // block_width
                 if number_of_blocks_center > 0:            
                     image_block_center = self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_center)
@@ -437,14 +437,14 @@ class Level():
                         image.blit(image_block_center, (current_block_pos, 0))
                         current_block_pos += block_width
 
-                # Right platforms here
+                # blit right sprite onto right side of platform
                 image.blit(self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_right), (current_block_pos, 0))
                 platform_level.append(image)
                 sprite_level.append(platform_level)
-                
             else:
                 image = pygame.Surface([platform_level[0], platform_level[1]]).convert()
                 image.set_colorkey(BLACK)
+                 # blit sprite onto center for platform
                 image.blit(self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_center), (0, 0))
                 platform_level.append(image)
                 sprite_level.append(platform_level)
