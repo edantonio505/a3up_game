@@ -43,3 +43,7 @@ WINDOW_TITLE = "New little game"
 
 HIGHEST_JUMP_RATE = 10
 HIGHEST_JUMP_THRESHOLD = 300
+
+
+
+SPRITE_SHEET_PATH = "images/tiles_spritesheet.png"

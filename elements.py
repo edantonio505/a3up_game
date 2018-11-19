@@ -1,5 +1,5 @@
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK, PLAYER_HEIGHT, RED
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK, PLAYER_HEIGHT, RED, SPRITE_SHEET_PATH
 
 
 class Player(pygame.sprite.Sprite):
@@ -355,21 +355,28 @@ class Level():
 
 
 
-    # convert level design to platforms array with [width, height, pos_x_pos_y] values
-    def get_level_from_design(self, using_sprite=False, sprite_right=None, sprite_left=None, sprite_center=None, pos_y = (SCREEN_HEIGHT-PLAYER_HEIGHT)):
+    def get_platform_image_sprite(self, sprite_sheet, platform_level, block_width, sprite_coord):
+        image = pygame.Surface([70, 70]).convert()
+        image.set_colorkey(RED)
+        image.blit(sprite_sheet, (0, 0), sprite_coord)
+        image = pygame.transform.scale(image, (block_width, platform_level[1]))
+        return image
+
+
+
+
+
+
+
+
+    def get_level_platform_elements(self, block_width, pos_y):
         level = []
         platform_height = self.height
-        level_design = self.level_design.split("\n")        
-        sprite_level = []
-
-        block_width = 0
-
+        level_design = self.level_design.split("\n")
         for platform in reversed(level_design[1:-2]): 
             new_platform = None
             platform = platform[1:-1]
             number_of_platforms = len(platform.split())
-            
-
             if "#" in platform:
                 new_platform = []
                 platform_width = 0
@@ -382,135 +389,83 @@ class Level():
                 platform_width = 0
                 pos_x = 0
                 block_width = (self.screen_width //  len(platform))
-
                 new_platform = self.get_platform_list(platform, platform_width,  platform_height,  pos_x, pos_y, block_width, number_of_platforms)
                 self.level_limit_y = new_platform[3]
                 self.level_limit_x = new_platform[2]
                 new_platform = None
-
             else:
                pos_y -= platform_height
-
             if new_platform:
                 if number_of_platforms > 1:
                     for platform in new_platform:
                         level.append(platform)
                 else:
                     level.append(new_platform)
-            
-        
+        return level, block_width
 
+
+
+
+
+
+
+
+
+    def get_platforms_with_sprites(self, level, block_width, sprite_right, sprite_left, sprite_center):
+        sprite_level = []
+        # full platform width
+        file_path = SPRITE_SHEET_PATH
+        # load image
+        sprite_sheet = pygame.image.load(file_path).convert()
+        # ===================================================
+        for platform_level in level:
+            if platform_level[0] > block_width:
+                current_block_pos = 0
+                # Create a new blank image
+                image = pygame.Surface([platform_level[0], platform_level[1]]).convert()
+                image.set_colorkey(BLACK)
+
+                # blit left side onto new image
+                image.blit(self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_left), (current_block_pos, 0))
+                current_block_pos += block_width
+
+                # create center image here
+                number_of_blocks_center = (platform_level[0] - (block_width*2)) // block_width
+                if number_of_blocks_center > 0:            
+                    image_block_center = self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_center)
+                    for posx_block in range(number_of_blocks_center):
+                        image.blit(image_block_center, (current_block_pos, 0))
+                        current_block_pos += block_width
+
+                # Right platforms here
+                image.blit(self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_right), (current_block_pos, 0))
+                platform_level.append(image)
+                sprite_level.append(platform_level)
+                
+            else:
+                image = pygame.Surface([platform_level[0], platform_level[1]]).convert()
+                image.set_colorkey(BLACK)
+                image.blit(self.get_platform_image_sprite(sprite_sheet, platform_level, block_width, sprite_center), (0, 0))
+                platform_level.append(image)
+                sprite_level.append(platform_level)
+        return sprite_level
+
+
+
+
+
+
+
+
+    # convert level design to platforms array with [width, height, pos_x_pos_y] values
+    def get_level_from_design(self, using_sprite=False, sprite_right=None, sprite_left=None, sprite_center=None, pos_y = (SCREEN_HEIGHT-PLAYER_HEIGHT)):        
+        block_width = 0
+        level, block_width = self.get_level_platform_elements(block_width, pos_y)
         if using_sprite and block_width > 0:
-            # append first end 
-
-            # full platform width
-            # width = 0, height = 1, pos_x = 2, pos_y = 3
-            file_path = "images/tiles_spritesheet.png"
-
-
-
-            # Getting a surfice, create a blank surfice 
-            # load image
-            sprite_sheet = pygame.image.load(file_path).convert()
-            # ===================================================
-
-
-
-
-
-
-            for platform_level in level:
-               
-
-                if platform_level[0] > block_width:
-
-                    current_block_pos = 0
-                    # Create a new blank image
-                    image = pygame.Surface([platform_level[0], platform_level[1]]).convert()
-                    image.set_colorkey(BLACK)
-
-
- 
-
-                    # blit left side onto new image
-                    new_image_block_left = pygame.Surface([70, 70]).convert()
-                    new_image_block_left.set_colorkey(RED)
-                    new_image_block_left.blit(sprite_sheet, (0, 0), sprite_left)
-                    new_image_block_left = pygame.transform.scale(new_image_block_left, (block_width, platform_level[1]))
-                    image.blit(new_image_block_left, (current_block_pos, 0))
-                    current_block_pos += block_width
-
-
-
-
-
-                    # create center image here
-                    number_of_blocks_center = (platform_level[0] - (block_width*2)) // block_width
-                    if number_of_blocks_center > 0:           
-                        image_block_center = pygame.Surface([70, 70]).convert()
-                        image_block_center.set_colorkey(RED)
-                        image_block_center.blit(sprite_sheet, (0, 0), sprite_center)
-                        image_block_center = pygame.transform.scale(image_block_center, (block_width, platform_level[1]))   
-                        
-                        for posx_block in range(number_of_blocks_center):
-                            image.blit(image_block_center, (current_block_pos, 0))
-                            current_block_pos += block_width
-
-
-
-                    # Right platforms here
-                    image_block_right = pygame.Surface([70, 70]).convert()
-                    image_block_right.set_colorkey(RED)
-                    image_block_right.blit(sprite_sheet, (0,0), sprite_right)
-                    image_block_right = pygame.transform.scale(image_block_right, (block_width, platform_level[1])) 
-                    image.blit(image_block_right, (current_block_pos, 0))
-                    platform_level.append(image)
-                    sprite_level.append(platform_level)
-
-                    # Display what I have so far
-                    # self.screen.blit(image, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-                    # pygame.display.update()
-                    
-
-
-                    # left_end = [block_width, platform_level[1], platform_level[2], platform_level[3], sprite_left]
-                    # center = [platform_level[0] - (block_width*2), platform_level[1], platform_level[2]+block_width, platform_level[3], sprite_center]
-                    # right_end = [block_width , platform_level[1], (platform_level[0])+(platform_level[2]) - block_width, platform_level[3], sprite_right]
-                    
-
-
-
-                    # sprite_level.append(left_end)
-                    # sprite_level.append(center)
-                    # sprite_level.append(right_end)
-
-                    
-                else:
-                    image = pygame.Surface([platform_level[0], platform_level[1]]).convert()
-                    image.set_colorkey(BLACK)
-
-                    image_block_center = pygame.Surface([70, 70]).convert()
-                    image_block_center.set_colorkey(RED)
-                    image_block_center.blit(sprite_sheet, (0, 0), sprite_center)
-                    image_block_center = pygame.transform.scale(image_block_center, (block_width, platform_level[1]))
-                    image.blit(image_block_center, (0, 0))
-                    # self.screen.blit(image, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-                    # pygame.display.update()
-                    
-
-                    platform_level.append(image)
-                    sprite_level.append(platform_level)
-                    # center = platform_level
-                    # center.append(sprite_center)
-                    # sprite_level.append(center)
-
-
-                    # width, height, pos_x, pos_y
-                    # append last end
-        
-        if using_sprite == True:
-            return sprite_level
+           level = self.get_platforms_with_sprites(level, block_width, sprite_right, sprite_left, sprite_center)
         return level
+
+
 
 
 
@@ -544,8 +499,6 @@ class Level():
 
         for enemy in self.enemy_list:
             enemy.rect.y -= shift_y
-    
-
 
         for sprite in self.background_sprites:
             sprite.rect.y -= shift_y
